@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 
 # import the library used to query a website
 import urllib2
+import json
 
 from model import connect_to_db, db, Page, Image
 
@@ -15,14 +16,26 @@ try:
 
     # call BeautifulSoup on an array of lines in string format
     soup = BeautifulSoup("".join(pageHtml))
+    print soup.prettify()[0:1000]
+
 
     # find all links in array of lines
     hrefs = soup.findAll("a")
 
+
+
     for href in hrefs:
         print href
 
+    with open("scrape.json", "w") as writeJSON:
+        json.dump(scrape, writeJSON)
+
     # check if item in db, if not - add to db and commit
+
+    # Add cats
+    # auden = Cat(name='Auden', color='grey')
+    # session.add(auden)
+    # session.commit()
 
 except urllib2.URLError as e:
     # exception handling for URLError
