@@ -4,8 +4,10 @@ from bs4 import BeautifulSoup
 # import the library used to query a website
 import urllib2
 import json
+import sqlalchemy
 
-from model import connect_to_db, db, Page, Image
+from model import Page, Image
+# FIXME do i import Base or engine or something else (in lieu of connect_to_db and db)?
 
 
 try:
@@ -18,24 +20,24 @@ try:
     soup = BeautifulSoup("".join(pageHtml))
     print soup.prettify()[0:1000]
 
+    # find all image sources in array of lines
+    imgsrcs = soup.findAll("img")["src"]
 
-    # find all links in array of lines
-    hrefs = soup.findAll("a")
+    for imgsrc in imgsrcs:
+        print imgsrc
+        # check if item in db, if not - add to db and commit
+        possible_image = session.query(Image).filter_by(image_url=imgsrc).first()
+        if not possible_image:
+            src_image = Image(image_url=imgsrc, page_id=page_id)
+            session.add(src_image)
 
+    # FIXME: where do i get the page_id?
 
-
-    for href in hrefs:
-        print href
+    session.commit()
 
     with open("scrape.json", "w") as writeJSON:
         json.dump(scrape, writeJSON)
 
-    # check if item in db, if not - add to db and commit
-
-    # Add cats
-    # auden = Cat(name='Auden', color='grey')
-    # session.add(auden)
-    # session.commit()
 
 except urllib2.URLError as e:
     # exception handling for URLError

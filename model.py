@@ -1,15 +1,18 @@
 """Models and database functions for web scraper."""
 
-from sqlalchemy import Column, String, \
-    create_engine
+from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, String, \
+    create_engine, Sequence
 from sqlalchemy.ext.declarative import \
     declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
+
 DB_URI = "postgresql:///scrapes"
 
 Base = declarative_base()
+
 
 ##############################################################################
 """ Model definition """
@@ -19,9 +22,9 @@ class Page(Base):
 
     __tablename__ = "pages"
 
-    page_id = Column(Integer, autoincrement=True, primary_key=True)
+    page_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
     page_URL = Column(String(255), nullable=True)
-    image_id = Column(Integer, ForeignKey('images.image_id'))
+    image_id = Column(Integer(), ForeignKey('images.image_id'))
 
     def __repr__(self):
         """Provide helpful representation when printed, for human readability."""
@@ -34,9 +37,9 @@ class Image(Base):
 
     __tablename__ = "images"
 
-    image_id = Column(Integer, autoincrement=True, primary_key=True)
+    image_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
     image_URL = Column(String(255), nullable=True)
-    page_id = Column(Integer, ForeignKey('pages.page_id'))
+    page_id = Column(Integer(), ForeignKey('pages.page_id'))
 
     def __repr__(self):
         """Provide helpful representation when printed, for human readability."""
