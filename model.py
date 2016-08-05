@@ -5,8 +5,6 @@ from sqlalchemy import Column, Integer, String, \
     create_engine, Sequence
 from sqlalchemy.ext.declarative import \
     declarative_base
-from sqlalchemy.orm import sessionmaker
-
 
 
 DB_URI = "postgresql:///scrapes"
@@ -46,13 +44,12 @@ class Image(Base):
 
         return "<Image image_id=%s image_URL=%s>" % (self.image_id, self.image_URL)
 
+# FIXME user_id_seq - create separate table for text, and association table for images
 
 ##############################################################################
 """ Create tables if not already created, and connect to python API"""
 
 engine = create_engine(DB_URI, echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
 
 Base.metadata.create_all(engine)
 
