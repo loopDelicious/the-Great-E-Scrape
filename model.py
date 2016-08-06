@@ -44,7 +44,20 @@ class Image(Base):
 
         return "<Image image_id=%s image_URL=%s>" % (self.image_id, self.image_URL)
 
-# FIXME user_id_seq - create separate table for text, and association table for images
+
+class PageImageLink(Base):
+    """Association table connecting pages to images."""
+
+    __tablename__ = "page_image_link"
+
+    page_id = Column(Integer(), ForeignKey('pages.page_id'), primary_key=True)
+    image_id = Column(Integer, ForeignKey('images.image_id'), primary_key=True)
+
+    def __repr__(self):
+        """Provide helpful representation when printed, for human readability."""
+
+        return "<PageImageLink page_id=%s image_id=%s>" % (self.page_id, self.image_id)
+
 
 ##############################################################################
 """ Create tables if not already created, and connect to python API"""
@@ -55,3 +68,4 @@ Base.metadata.create_all(engine)
 
 
 # https://cloud.google.com/vision/
+# create table for text

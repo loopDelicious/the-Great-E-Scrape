@@ -94,7 +94,7 @@ def scrape_image(page_URL):
         else:
             print 'Everything is fine.'
 
-# FIXME scrape text too
+# scrape text too
 # pageURL from crawler function should return a batch of pages, not just one
 
 if __name__ == '__main__':
