@@ -26,20 +26,28 @@ def crawler(website_url):
 
         # find all links with hashtag cat, limit to 100 results
         # FIXME add hashtag cat requirement (string = "#cat")
-        pageLinks = soup.findAll("a[href]", limit=100)
+        pageLinks = soup.findAll("a", {"href": True}, limit=100)
         # import pdb; pdb.set_trace()
         page_URLs = []
 
         for pageLink in pageLinks:
             pageLink = pageLink['href']
+
+            # if URL does not have a domain, add the main page's domain'
+            if pageLink[0] == '/' and pageLink[:1] != '//':
+                pageLink = website_url + pageLink
+
             # check if item in db, if not - add to db and commit
             existing_page = session.query(Page).filter_by(page_URL=pageLink).first()
+
+            # add to array of link strings
+            page_URLs.append(pageLink)
+
             if not existing_page:
                 page_URL = Page(page_URL=pageLink)
                 session.add(page_URL)
                 session.commit()
-                # add to array of link strings FIXME could also return a list of objects
-                page_URLs.append(pageLink)
+
         # import pdb; pdb.set_trace()
         return page_URLs
 
@@ -75,13 +83,12 @@ def scrape_image(page_URL):
 
         for img in imgs:
 
-            print img
             # check if item in db under this page, if not - add to db and commit
             page_id = session.query(Page).filter_by(page_URL=page_URL).first()
-            existing_image = session.query(Image).filter_by(image_url=img["src"], page_id=page_id).first()
+            existing_image = session.query(Image).filter_by(image_URL=img["src"]).first()
 
             if not existing_image:
-                src_image = Image(image_url=img["src"])
+                src_image = Image(image_URL=img["src"])
                 session.add(src_image)
                 session.commit()
 
@@ -106,7 +113,7 @@ if __name__ == '__main__':
     # create a Session
     session = Session()
 
-    page_URLs = crawler("https://en.wikipedia.org/wiki/Main_Page")
+    page_URLs = crawler("https://www.tumblr.com/explore/trending")
 
     for page_URL in page_URLs:
         scrape_image(page_URL)

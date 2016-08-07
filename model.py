@@ -22,7 +22,7 @@ class Page(Base):
     __tablename__ = "pages"
 
     page_id = Column(Integer(), autoincrement=True, primary_key=True)
-    page_URL = Column(String(255), nullable=True)
+    page_URL = Column(String(500), nullable=True)
 
     # define relationship to image
     # images = relationship("Image",
@@ -42,7 +42,7 @@ class Image(Base):
     __tablename__ = "images"
 
     image_id = Column(Integer(), autoincrement=True, primary_key=True)
-    image_URL = Column(String(255), nullable=True)
+    image_URL = Column(String(500), nullable=True)
 
 
     def __repr__(self):
