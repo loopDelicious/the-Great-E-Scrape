@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, \
     create_engine, Sequence
 from sqlalchemy.ext.declarative import \
     declarative_base
+from sqlalchemy.orm import relationship
 
 
 DB_URI = "postgresql:///scrapes"
@@ -22,7 +23,12 @@ class Page(Base):
 
     page_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
     page_URL = Column(String(255), nullable=True)
-    image_id = Column(Integer(), ForeignKey('images.image_id'))
+
+    # define relationship to image
+    images = relationship("Image",
+                           primaryjoin="and_(Page.id==Image.page_id)",
+                           backref="page")
+
 
     def __repr__(self):
         """Provide helpful representation when printed, for human readability."""
@@ -37,7 +43,7 @@ class Image(Base):
 
     image_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
     image_URL = Column(String(255), nullable=True)
-    page_id = Column(Integer(), ForeignKey('pages.page_id'))
+
 
     def __repr__(self):
         """Provide helpful representation when printed, for human readability."""
@@ -52,6 +58,7 @@ class PageImageLink(Base):
 
     page_id = Column(Integer(), ForeignKey('pages.page_id'), primary_key=True)
     image_id = Column(Integer, ForeignKey('images.image_id'), primary_key=True)
+
 
     def __repr__(self):
         """Provide helpful representation when printed, for human readability."""
