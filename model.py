@@ -21,13 +21,13 @@ class Page(Base):
 
     __tablename__ = "pages"
 
-    page_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
+    page_id = Column(Integer(), autoincrement=True, primary_key=True)
     page_URL = Column(String(255), nullable=True)
 
     # define relationship to image
-    images = relationship("Image",
-                           primaryjoin="and_(Page.id==Image.page_id)",
-                           backref="page")
+    # images = relationship("Image",
+    #                        primaryjoin="and_(Page.page_id==Image.page_id)",
+    #                        backref="page")
 
 
     def __repr__(self):
@@ -41,7 +41,7 @@ class Image(Base):
 
     __tablename__ = "images"
 
-    image_id = Column(Integer(), Sequence('user_id_seq'), primary_key=True)
+    image_id = Column(Integer(), autoincrement=True, primary_key=True)
     image_URL = Column(String(255), nullable=True)
 
 
@@ -56,8 +56,8 @@ class PageImageLink(Base):
 
     __tablename__ = "page_image_link"
 
-    page_id = Column(Integer(), ForeignKey('pages.page_id'), primary_key=True)
-    image_id = Column(Integer, ForeignKey('images.image_id'), primary_key=True)
+    page_id = Column(Integer(), ForeignKey('pages.page_id'), primary_key=True, autoincrement='ignore_fk')
+    image_id = Column(Integer, ForeignKey('images.image_id'), primary_key=True, autoincrement='ignore_fk')
 
 
     def __repr__(self):

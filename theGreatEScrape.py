@@ -21,24 +21,25 @@ def crawler(website_url):
         pageFile.close()
 
         # call BeautifulSoup on an array of lines in string format
-        soup = BeautifulSoup("".join(pageHtml))
-        print soup.prettify()[0:1000]
+        soup = BeautifulSoup("".join(pageHtml), "html.parser")
+        # print soup.prettify()[0:1000]
 
         # find all links with hashtag cat, limit to 100 results
         # FIXME add hashtag cat requirement (string = "#cat")
-        pageLinks = soup.findAll("a", limit=100)
+        pageLinks = soup.findAll("a[href]", limit=100)
         # import pdb; pdb.set_trace()
         page_URLs = []
 
         for pageLink in pageLinks:
-            print pageLink
+            pageLink = pageLink['href']
             # check if item in db, if not - add to db and commit
-            possible_page = session.query(Page).filter_by(page_url=pageLink).first()
-            if not possible_page:
+            existing_page = session.query(Page).filter_by(page_URL=pageLink).first()
+            if not existing_page:
                 page_URL = Page(page_URL=pageLink)
                 session.add(page_URL)
                 session.commit()
-                page_URLs.append(page_URL)
+                # add to array of link strings FIXME could also return a list of objects
+                page_URLs.append(pageLink)
         # import pdb; pdb.set_trace()
         return page_URLs
 
@@ -66,21 +67,21 @@ def scrape_image(page_URL):
         pageFile.close()
 
         # call BeautifulSoup on an array of lines in string format
-        soup = BeautifulSoup("".join(pageHtml))
-        print soup.prettify()[0:1000]
+        soup = BeautifulSoup("".join(pageHtml), "html.parser")
+        # print soup.prettify()[0:1000]
 
         # find all image sources in array of lines
-        imgsrcs = soup.findAll("img")["src"]
+        imgs = soup.findAll("img")
 
-        for imgsrc in imgsrcs:
+        for img in imgs:
 
-            print imgsrc
+            print img
             # check if item in db under this page, if not - add to db and commit
             page_id = session.query(Page).filter_by(page_URL=page_URL).first()
-            possible_image = session.query(Image).filter_by(image_url=imgsrc, page_id=page_id).first()
+            existing_image = session.query(Image).filter_by(image_url=img["src"], page_id=page_id).first()
 
-            if not possible_image:
-                src_image = Image(image_url=imgsrc)
+            if not existing_image:
+                src_image = Image(image_url=img["src"])
                 session.add(src_image)
                 session.commit()
 
@@ -100,12 +101,13 @@ def scrape_image(page_URL):
 
 if __name__ == '__main__':
 
-    page_URLs = crawler("https://www.reddit.com/")
-
-    for page_URL in page_URLs:
-        scrape_image(page_URL)
-
     # create a configured Session class
     Session = sessionmaker(bind=engine)
     # create a Session
     session = Session()
+
+    page_URLs = crawler("https://en.wikipedia.org/wiki/Main_Page")
+
+    for page_URL in page_URLs:
+        scrape_image(page_URL)
+
