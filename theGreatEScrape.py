@@ -13,7 +13,6 @@ def crawler(website_url):
     """ find pages on a website """
 
     try:
-        # loop through .tumblr a tags on .tumblr.com, maybe different function with limited number of pages
 
         # open and read the website
         pageFile = urllib2.urlopen(website_url)
